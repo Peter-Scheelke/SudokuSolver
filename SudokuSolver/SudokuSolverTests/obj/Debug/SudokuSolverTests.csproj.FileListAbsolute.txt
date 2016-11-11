@@ -1,0 +1,9 @@
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\SudokuSolverTests.dll
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\SudokuSolverTests.pdb
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\SudokuSolver.exe
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\SudokuSolver.pdb
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\obj\Debug\SudokuSolverTests.csprojResolveAssemblyReference.cache
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\obj\Debug\SudokuSolverTests.dll
+C:\Users\Peter Scheelke\Dropbox\School\Object Oriented Programming\Assignment 4\SudokuSolver\SudokuSolverTests\obj\Debug\SudokuSolverTests.pdb

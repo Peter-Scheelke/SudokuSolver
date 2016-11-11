@@ -1,0 +1,41 @@
+<stylecopresultscache>
+  <version>12</version>
+  <project key="-1184068030">
+    <configuration>DEBUG;TRACE</configuration>
+  </project>
+  <sourcecode name="Cell.cs" parser="StyleCop.CSharp.CsParser">
+    <timestamps>
+      <styleCop>2016/09/01 16:26:09.613</styleCop>
+      <settingsFile>2016/09/01 16:26:09.595</settingsFile>
+      <sourceFile>2016/11/11 12:11:06.698</sourceFile>
+      <parser>2016/09/01 16:26:09.613</parser>
+      <StyleCop.CSharp.DocumentationRules>2016/09/01 16:26:09.613</StyleCop.CSharp.DocumentationRules>
+      <StyleCop.CSharp.DocumentationRules.FilesHashCode>-948616983</StyleCop.CSharp.DocumentationRules.FilesHashCode>
+      <StyleCop.CSharp.LayoutRules>2016/09/01 16:26:09.613</StyleCop.CSharp.LayoutRules>
+      <StyleCop.CSharp.LayoutRules.FilesHashCode>0</StyleCop.CSharp.LayoutRules.FilesHashCode>
+      <StyleCop.CSharp.MaintainabilityRules>2016/09/01 16:26:09.613</StyleCop.CSharp.MaintainabilityRules>
+      <StyleCop.CSharp.MaintainabilityRules.FilesHashCode>0</StyleCop.CSharp.MaintainabilityRules.FilesHashCode>
+      <StyleCop.CSharp.NamingRules>2016/09/01 16:26:09.613</StyleCop.CSharp.NamingRules>
+      <StyleCop.CSharp.NamingRules.FilesHashCode>0</StyleCop.CSharp.NamingRules.FilesHashCode>
+      <StyleCop.CSharp.OrderingRules>2016/09/01 16:26:09.613</StyleCop.CSharp.OrderingRules>
+      <StyleCop.CSharp.OrderingRules.FilesHashCode>0</StyleCop.CSharp.OrderingRules.FilesHashCode>
+      <StyleCop.CSharp.ReadabilityRules>2016/09/01 16:26:09.613</StyleCop.CSharp.ReadabilityRules>
+      <StyleCop.CSharp.ReadabilityRules.FilesHashCode>0</StyleCop.CSharp.ReadabilityRules.FilesHashCode>
+      <StyleCop.CSharp.SpacingRules>2016/09/01 16:26:09.613</StyleCop.CSharp.SpacingRules>
+      <StyleCop.CSharp.SpacingRules.FilesHashCode>0</StyleCop.CSharp.SpacingRules.FilesHashCode>
+    </timestamps>
+    <violations>
+      <violation namespace="StyleCop.CSharp.SpacingRules" rule="SymbolsMustBeSpacedCorrectly" ruleCheckId="SA1003">
+        <context>The spacing around the symbol '!' is invalid.</context>
+        <line>87</line>
+        <index>2960</index>
+        <endIndex>2960</endIndex>
+        <startLine>87</startLine>
+        <startColumn>21</startColumn>
+        <endLine>87</endLine>
+        <endColumn>21</endColumn>
+        <warning>False</warning>
+      </violation>
+    </violations>
+  </sourcecode>
+</stylecopresultscache>
