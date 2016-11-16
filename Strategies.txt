@@ -1,0 +1,11 @@
+Only Choice Rule: A row, block, or column containing only one unknown
+cell implies the value of that cell.
+
+Single Possibility Rule: A cell cannot contain a value contained
+by the row, block, or column in which it is contained.
+
+Only Square:
+
+Guess: Pick a possible value for a cell, clone the puzzle, and hope it works.
+Make sure to solve all possibilities (in case there is more than one solution)
+

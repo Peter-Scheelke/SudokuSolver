@@ -103,14 +103,13 @@ namespace SudokuSolver.Sudoku
                 for (int k = 0; k < dimension * dimension; ++k)
                 {
                     this.rows[i].Add(allCells[(dimension * dimension * i) + k]);
-                    this.rows[i][rows[i].Count - 1].Row = i;
+                    this.rows[i][this.rows[i].Count - 1].Row = this.rows[i];
                     this.columns[k].Add(allCells[(dimension * dimension * i) + k]);
-                    this.columns[k][columns[k].Count - 1].Column = k;
+                    this.columns[k][this.columns[k].Count - 1].Column = this.columns[k];
 
                     int blockIndex = currentBlock + (k / dimension);
                     this.blocks[blockIndex].Add(allCells[(dimension * dimension * i) + k]);
-                    this.blocks[blockIndex][blocks[blockIndex].Count - 1].Block = blockIndex;
-
+                    this.blocks[blockIndex][this.blocks[blockIndex].Count - 1].Block = this.blocks[blockIndex];
                 }
 
                 if ((i + 1) % dimension == 0 && i != 0)
@@ -124,6 +123,70 @@ namespace SudokuSolver.Sudoku
         /// Gets the width/height of each block in the puzzle
         /// </summary>
         public int Dimension { get; private set; }
+
+        /// <summary>
+        /// Creates a copy of the <see cref="SudokuPuzzle"/>
+        /// </summary>
+        /// <returns>A copy of the <see cref="SudokuPuzzle"/></returns>
+        public SudokuPuzzle Clone()
+        {
+            List<int> cellValues = new List<int>();
+
+            for (int i = 0; i < this.Dimension * this.Dimension * this.Dimension * this.Dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            SudokuPuzzle newPuzzle = new SudokuPuzzle(this.Dimension, cellValues);
+
+            for (int i = 0; i < this.Dimension * this.Dimension; ++i)
+            {
+                for (int k = 0; k < this.Dimension * this.Dimension; ++k)
+                {
+                    this.SetCellAllowedValues(this.rows[i][k], newPuzzle.rows[i][k]);
+                }
+            }
+
+            return newPuzzle;                   
+        }
+
+        /// <summary>
+        /// Creates a list of all the possible values a <see cref="Cell"/> could have
+        /// </summary>
+        /// <returns>All the possible values a <see cref="Cell"/> could have</returns>
+        public List<int> GetAllAllowedValues()
+        {
+            List<int> allowedValues = new List<int>();
+            for (int i = cellMin; i <= cellMax; ++i)
+            {
+                allowedValues.Add(i);
+            }
+
+            return allowedValues;
+        }
+
+        /// <summary>
+        /// Makes the allowed values in each <see cref="Cell"/> match
+        /// </summary>
+        /// <param name="sourceCell">The <see cref="Cell"/> whose allowed values will be matched</param>
+        /// <param name="otherCell">The <see cref="Cell"/> whose allowed values will change</param>
+        private void SetCellAllowedValues(Cell sourceCell, Cell otherCell)
+        {
+            if (sourceCell.Count == 1)
+            {
+                otherCell.RemoveAllExcept(sourceCell.AllowedValue);
+            }
+            else
+            {
+                for (int i = this.cellMin; i <= this.cellMax; ++i)
+                {
+                    if (!sourceCell.AllowedValues.ContainsKey(i))
+                    {
+                        otherCell.RemoveAllowedValue(i);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the horizontal rows of the puzzle

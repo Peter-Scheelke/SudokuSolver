@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="Cell.cs" company="Peter Scheelke">
+// <copyright file="SudokuFiler.cs" company="Peter Scheelke">
 //      Copyright (c) Peter Scheelke. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -38,7 +38,7 @@ namespace SudokuSolver.Sudoku
 
                 // Ignore the first two lines (one is the dimension and the other
                 // is just a list of the column numbers)
-                for (int i = 2; i< lines.Length; ++i)
+                for (int i = 2; i < lines.Length; ++i)
                 {
                     string[] symbols = lines[i].Split(' ');
                     foreach (string symbol in symbols)
@@ -125,7 +125,7 @@ namespace SudokuSolver.Sudoku
             }
             else
             {
-                return Convert.ToInt32(symbol - 'A');
+                return Convert.ToInt32(symbol - 'A' + 10);
             }
         }
 
@@ -140,7 +140,7 @@ namespace SudokuSolver.Sudoku
             {
                 return '-';
             }
-            else if (symbol >= 1 && symbol <= 9)
+            else if (symbol <= 9 && symbol >= 1)
             {
                 return Convert.ToChar(symbol.ToString()[0]);
             }

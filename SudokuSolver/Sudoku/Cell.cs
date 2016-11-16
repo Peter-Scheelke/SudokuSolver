@@ -84,17 +84,46 @@ namespace SudokuSolver.Sudoku
         /// <summary>
         /// Gets or sets the block containing the <see cref="Cell"/>
         /// </summary>
-        public int Block { get; set; }
+        public List<Cell> Block { get; set; }
 
         /// <summary>
         /// Gets or sets the column containing the <see cref="Cell"/>
         /// </summary>
-        public int Column { get; set; }
+        public List<Cell> Column { get; set; }
 
         /// <summary>
         /// Gets or sets the row containing the <see cref="Cell"/>
         /// </summary>
-        public int Row { get; set; }
+        public List<Cell> Row { get; set; }
+
+        /// <summary>
+        /// Gets the number of possible values the cell could have
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return this.allowedValues.Count;
+            }
+        }
+
+        /// <summary>
+        /// Gets an allowed value from the <see cref="Cell"/>
+        /// If the number of allowed values in the <see cref="Cell"/>
+        /// is one, this will get the only allowed value.
+        /// </summary>
+        public int AllowedValue
+        {
+            get
+            {
+                foreach (int allowedValue in this.AllowedValues.Keys)
+                {
+                    return allowedValue;
+                }
+
+                throw new Exception("Error: Cell must have at least one allowed value.");
+            }
+        }
 
         /// <summary>
         /// Gets a <see cref="Dictionary{TKey, TValue}"/> containing the values the 

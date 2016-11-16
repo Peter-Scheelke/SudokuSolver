@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SudokuSolver.Sudoku;
 using System.Collections.Generic;
 using System.IO;
+using SudokuSolver.SudokuStrategies;
 
 namespace SudokuSolverTests
 {
@@ -147,7 +148,7 @@ namespace SudokuSolverTests
             }
 
             Assert.IsTrue(exceptionWasThrown);
-            Assert.IsTrue(cell.AllowedValues.Count == 1);
+            Assert.IsTrue(cell.Count == 1);
 
             // Test adding an allowed value that is too large
             exceptionWasThrown = false;
@@ -274,6 +275,7 @@ namespace SudokuSolverTests
             exceptionWasThrown = false;
 
             cell.RemoveAllExcept(9);
+            Assert.IsTrue(cell.AllowedValue == 9);
             for (int i = 1; i < 9; ++i)
             {
                 Assert.IsFalse(cell.AllowedValues.ContainsKey(i));
@@ -338,33 +340,33 @@ namespace SudokuSolverTests
 
             // Test the top left cell
             Cell testCell = puzzle.Rows[0][0];
-            Assert.IsTrue(testCell.Row == 0);
-            Assert.IsTrue(testCell.Column == 0);
-            Assert.IsTrue(testCell.Block == 0);
+            Assert.IsTrue(object.ReferenceEquals(testCell.Row, puzzle.Rows[0]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Column, puzzle.Columns[0]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Block, puzzle.Blocks[0]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Columns[0][0]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Blocks[0][0]));
 
             // Test the top right cell
             testCell = puzzle.Rows[0][dim * dim - 1];
-            Assert.IsTrue(testCell.Row == 0);
-            Assert.IsTrue(testCell.Column == dim * dim - 1);
-            Assert.IsTrue(testCell.Block == dim - 1);
+            Assert.IsTrue(object.ReferenceEquals(testCell.Row, puzzle.Rows[0]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Column, puzzle.Columns[dim * dim - 1]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Block, puzzle.Blocks[dim - 1]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Columns[dim * dim - 1][0]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Blocks[dim - 1][dim - 1]));
 
             // Test the bottom left cell
             testCell = puzzle.Rows[dim * dim - 1][0];
-            Assert.IsTrue(testCell.Row == dim * dim - 1);
-            Assert.IsTrue(testCell.Column == 0);
-            Assert.IsTrue(testCell.Block == dim * dim - dim);
+            Assert.IsTrue(object.ReferenceEquals(testCell.Row, puzzle.Rows[dim * dim - 1]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Column, puzzle.Columns[0]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Block, puzzle.Blocks[dim * dim - dim]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Columns[0][dim * dim - 1]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Blocks[dim * dim - dim][dim * dim - dim]));
 
             // Test the bottom right cell
             testCell = puzzle.Rows[dim * dim  - 1][dim * dim - 1];
-            Assert.IsTrue(testCell.Row == dim * dim - 1);
-            Assert.IsTrue(testCell.Column == dim * dim - 1);
-            Assert.IsTrue(testCell.Block == dim * dim - 1);
+            Assert.IsTrue(object.ReferenceEquals(testCell.Row, puzzle.Rows[dim * dim - 1]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Column, puzzle.Columns[dim * dim - 1]));
+            Assert.IsTrue(object.ReferenceEquals(testCell.Block, puzzle.Blocks[dim * dim - 1]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Columns[dim * dim - 1][dim * dim - 1]));
             Assert.IsTrue(object.ReferenceEquals(testCell, puzzle.Blocks[dim * dim - 1][dim * dim - 1]));            
         }
@@ -479,6 +481,115 @@ namespace SudokuSolverTests
             for (int i = 0; i < inputFile.Length; ++i)
             {
                 Assert.IsTrue(inputFile[i] == outputFile[i]);
+            }
+
+            // Try a bad file path
+            try
+            {
+                SudokuFiler.Read("notafilepath.txt");
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public void TestClone()
+        {
+            string inputFilePath = "TestPuzzleInput.txt";
+            SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
+
+            for (int i = 0; i < puzzle.Dimension * puzzle.Dimension; ++i)
+            {
+                if (puzzle.Rows[0][i].Count == 1)
+                {
+                    int allowedValue = puzzle.Rows[0][i].AllowedValue;
+                    if (allowedValue != 1)
+                    {
+                        allowedValue = 1;
+                    }
+                    else
+                    {
+                        ++allowedValue;
+                    }
+
+                    puzzle.Rows[0][i].AddAllowedValue(allowedValue);
+                    break;
+                }
+            }
+
+            SudokuPuzzle clonedPuzzle = puzzle.Clone();
+
+            for (int i = 0; i < puzzle.Dimension * puzzle.Dimension; ++i)
+            {
+                for (int k = 0; k < puzzle.Dimension * puzzle.Dimension; ++k)
+                {
+                    Assert.IsTrue(puzzle.Rows[i][k].Count == clonedPuzzle.Rows[i][k].Count);
+                    Assert.IsTrue(puzzle.Columns[i][k].Count == clonedPuzzle.Columns[i][k].Count);
+                    Assert.IsTrue(puzzle.Blocks[i][k].Count == clonedPuzzle.Blocks[i][k].Count);
+                    foreach (int allowedValue in puzzle.Rows[i][k].AllowedValues.Keys)
+                    {
+                        Assert.IsTrue(clonedPuzzle.Rows[i][k].AllowedValues.ContainsKey(allowedValue));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Make sure a <see cref="SudokuPuzzle"/> can create a list of allowed <see cref="Cell"/> values correctly
+        /// </summary>
+        [TestMethod]
+        public void TestAllowedValues()
+        {
+            int dimension = 3;
+            List<int> cellValues = new List<int>();
+
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
+
+            List<int> allowedValues = puzzle.GetAllAllowedValues();
+
+            for (int i = 0; i < dimension * dimension; ++i)
+            {
+                Assert.IsTrue(allowedValues[i] == i + 1);
+            }
+        }
+
+        /// <summary>
+        /// Test the <see cref="SinglePossibilityStrategy"/>
+        /// </summary>
+        [TestMethod]
+        public void TestSinglePossibilityStrategy()
+        {
+            int dimension = 3;
+            List<int> cellValues = new List<int>();
+
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            for (int i = 0; i < dimension * dimension - 1; ++i)
+            {
+                cellValues[i] = i + 1;
+            }
+
+            SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
+
+            SinglePossibilityStrategy strategy = new SinglePossibilityStrategy();
+            strategy.AdvancePuzzle(puzzle);
+
+            for (int i = 0; i < puzzle.Rows[0].Count; ++i)
+            {
+                Assert.IsTrue(puzzle.Rows[0][i].Count == 1);
+                Assert.IsTrue(puzzle.Rows[0][i].AllowedValue == i + 1);
             }
         }
     }
