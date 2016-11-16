@@ -644,7 +644,7 @@ namespace SudokuSolverTests
                 Assert.IsTrue(puzzle.Blocks[0][i].AllowedValue == i + 1);
             }
 
-            // Try one that can't be advanced]
+            // Try one that can't be advanced
             cellValues.Clear();
             for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
             {
