@@ -563,10 +563,10 @@ namespace SudokuSolverTests
         }
 
         /// <summary>
-        /// Test the <see cref="SinglePossibilityStrategy"/>
+        /// Test the <see cref="OnlyChoiceStrategy"/>
         /// </summary>
         [TestMethod]
-        public void TestSinglePossibilityStrategy()
+        public void TestOnlyChoiceStrategy()
         {
             int dimension = 3;
             List<int> cellValues = new List<int>();
@@ -584,7 +584,7 @@ namespace SudokuSolverTests
 
             SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
 
-            SinglePossibilityStrategy strategy = new SinglePossibilityStrategy();
+            OnlyChoiceStrategy strategy = new OnlyChoiceStrategy();
             Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
 
             for (int i = 0; i < puzzle.Rows[0].Count; ++i)
@@ -653,6 +653,89 @@ namespace SudokuSolverTests
 
             puzzle = new SudokuPuzzle(dimension, cellValues);
             Assert.IsFalse(strategy.AdvancePuzzle(puzzle));
+        }
+
+        /// <summary>
+        /// Test the <see cref="SinglePossibilityStrategy"/>
+        /// </summary>
+        [TestMethod]
+        public void TestSinglePossibilityStrategy()
+        {
+            int dimension = 3;
+            List<int> cellValues = new List<int>();
+
+            // Test a row
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
+            SinglePossibilityStrategy strategy = new SinglePossibilityStrategy();
+
+            Cell changeCell = puzzle.Rows[0][0];
+
+            Assert.IsTrue(CheckCells(changeCell, 1));
+            
+
+            for (int i = 0; i < changeCell.Block.Count - 1; ++i)
+            {
+                changeCell = changeCell.Block[i];
+                changeCell.RemoveAllExcept(i + 1);
+                Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
+                Assert.IsFalse(CheckCells(changeCell, i + 1));
+            }
+        }
+
+        private static bool CheckCells(Cell changeCell, int value)
+        {
+            bool succeeded = true;
+            foreach (Cell cell in changeCell.Row)
+            {
+                if (object.ReferenceEquals(cell, changeCell))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!cell.AllowedValues.ContainsKey(value))
+                    {
+                        succeeded = false;
+                    }
+                }
+            }
+
+            foreach (Cell cell in changeCell.Column)
+            {
+                if (object.ReferenceEquals(cell, changeCell))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!cell.AllowedValues.ContainsKey(value))
+                    {
+                        succeeded = false;
+                    }
+                }
+            }
+
+            foreach (Cell cell in changeCell.Block)
+            {
+                if (object.ReferenceEquals(cell, changeCell))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (!cell.AllowedValues.ContainsKey(value))
+                    {
+                        succeeded = false;
+                    }
+                }
+            }
+
+            return succeeded;
         }
     }
 }

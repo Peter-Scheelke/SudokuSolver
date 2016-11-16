@@ -45,8 +45,8 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SudokuStrategies\OnlyChoiceStrategy.cs" />
     <Compile Include="SudokuStrategies\SinglePossibilityStrategy.cs" />
+    <Compile Include="SudokuStrategies\OnlyChoiceStrategy.cs" />
     <Compile Include="SudokuStrategies\SudokuStrategy.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>

@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SinglePossibilityStrategy.cs" company="Peter Scheelke">
+// <copyright file="OnlyChoiceStrategy.cs" company="Peter Scheelke">
 //      Copyright (c) Peter Scheelke. All rights reserved.
 // </copyright>
 //-----------------------------------------------------------------------
@@ -10,10 +10,10 @@ namespace SudokuSolver.SudokuStrategies
     using Sudoku;
 
     /// <summary>
-    /// The <see cref="SinglePossibilityStrategy"/> finds <see cref="Cells"/> in blocks, rows, and columns in which
+    /// The <see cref="OnlyChoiceStrategy"/> finds <see cref="Cells"/> in blocks, rows, and columns in which
     /// the values of all other cells have been found. The final cell then gets
     /// </summary>
-    public class SinglePossibilityStrategy : SudokuStrategy
+    public class OnlyChoiceStrategy : SudokuStrategy
     {
         /// <summary>
         /// Find all the <see cref="Cell"/>s that are in a region whose other <see cref="Cells"/>
@@ -67,8 +67,8 @@ namespace SudokuSolver.SudokuStrategies
         /// <summary>
         /// Checks the region (i.e. a row, column, or block) to see if a cell is the only remaining one.
         /// </summary>
-        /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being advanced by the <see cref="SinglePossibilityStrategy"/></param>
-        /// <param name="candidates">The <see cref="Cell"/>s that are relevant to the <see cref="SinglePossibilityStrategy"/></param>
+        /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being advanced by the <see cref="OnlyChoiceStrategy"/></param>
+        /// <param name="candidates">The <see cref="Cell"/>s that are relevant to the <see cref="OnlyChoiceStrategy"/></param>
         /// <param name="region">The row, block, or column being checked</param>
         private static void CheckRegion(SudokuPuzzle puzzle, List<Cell> candidates, List<Cell> region)
         {
