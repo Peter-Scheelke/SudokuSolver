@@ -571,6 +571,7 @@ namespace SudokuSolverTests
             int dimension = 3;
             List<int> cellValues = new List<int>();
 
+            // Test a row
             for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
             {
                 cellValues.Add(0);
@@ -584,13 +585,74 @@ namespace SudokuSolverTests
             SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
 
             SinglePossibilityStrategy strategy = new SinglePossibilityStrategy();
-            strategy.AdvancePuzzle(puzzle);
+            Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
 
             for (int i = 0; i < puzzle.Rows[0].Count; ++i)
             {
                 Assert.IsTrue(puzzle.Rows[0][i].Count == 1);
                 Assert.IsTrue(puzzle.Rows[0][i].AllowedValue == i + 1);
             }
+
+            // Test a column
+            cellValues.Clear();
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            for (int i = 0; i < dimension * dimension - 1; ++i)
+            {
+                cellValues[i * dimension * dimension] = i + 1;
+            }
+
+            
+            puzzle = new SudokuPuzzle(dimension, cellValues);
+            Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
+
+            for (int i = 0; i < puzzle.Columns[0].Count; ++i)
+            {
+                Assert.IsTrue(puzzle.Columns[0][i].Count == 1);
+                Assert.IsTrue(puzzle.Columns[0][i].AllowedValue == i + 1);
+            }
+
+            // Test a block
+            cellValues.Clear();
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            int index = 0;
+            for (int i = 0; i < dimension * dimension - 1; ++i)
+            {
+                cellValues[index] = i + 1;
+                ++index;
+
+                if ((i + 1) % dimension == 0)
+                {
+                    index += dimension * dimension - dimension;
+                }
+
+            }
+
+            puzzle = new SudokuPuzzle(dimension, cellValues);
+            Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
+
+            for (int i = 0; i < puzzle.Blocks[0].Count; ++i)
+            {
+                Assert.IsTrue(puzzle.Blocks[0][i].Count == 1);
+                Assert.IsTrue(puzzle.Blocks[0][i].AllowedValue == i + 1);
+            }
+
+            // Try one that can't be advanced]
+            cellValues.Clear();
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            puzzle = new SudokuPuzzle(dimension, cellValues);
+            Assert.IsFalse(strategy.AdvancePuzzle(puzzle));
         }
     }
 }
