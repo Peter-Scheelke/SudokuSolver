@@ -18,6 +18,15 @@ namespace SudokuSolver.SudokuStrategies
     public class SharedSubgroupStrategy : SudokuStrategy
     {
         /// <summary>
+        /// Converts the <see cref="SharedSubgroupStrategy"/> to a string
+        /// </summary>
+        /// <returns>The string version of the <see cref="SharedSubgroupStrategy"/></returns>
+        public override string ToString()
+        {
+            return "Shared Subgroup Strategy";
+        }
+
+        /// <summary>
         /// Gets a list of the regions relevant to the <see cref="SharedSubgroupStrategy"/>
         /// The relevant regions in this case are the blocks of the given <see cref="SudokuPuzzle"/>
         /// </summary>
@@ -139,7 +148,6 @@ namespace SudokuSolver.SudokuStrategies
                             }
                         }
                     }
-
                 }
             }
 

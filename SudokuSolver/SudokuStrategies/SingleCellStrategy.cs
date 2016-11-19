@@ -17,6 +17,15 @@ namespace SudokuSolver.SudokuStrategies
     public class SingleCellStrategy : SudokuStrategy
     {
         /// <summary>
+        /// Converts the <see cref="SingleCellStrategy"/> to a string
+        /// </summary>
+        /// <returns>The string version of the <see cref="SingleCellStrategy"/></returns>
+        public override string ToString()
+        {
+            return "Single Cell Strategy";
+        }
+
+        /// <summary>
         /// Gets the regions of the given <see cref="SudokuPuzzle"/> that are relevant
         /// to solving the <see cref="SudokuPuzzle"/>
         /// </summary>

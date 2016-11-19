@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SudokuSolver\SudokuSolver.cs" />
     <Compile Include="SudokuStrategies\BasicStrategy.cs" />
     <Compile Include="SudokuStrategies\SharedSubgroupStrategy.cs" />
     <Compile Include="SudokuStrategies\SingleCellStrategy.cs" />

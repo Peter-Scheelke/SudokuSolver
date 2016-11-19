@@ -17,6 +17,15 @@ namespace SudokuSolver.SudokuStrategies
     public class BasicStrategy : SudokuStrategy
     {
         /// <summary>
+        /// Converts the <see cref="BasicStrategy"/> to a string
+        /// </summary>
+        /// <returns>The string version of the <see cref="BasicStrategy"/></returns>
+        public override string ToString()
+        {
+            return "Basic Strategy";
+        }
+
+        /// <summary>
         /// Finds all of the <see cref="Cell"/>s in the given <see cref="SudokuPuzzle"/>
         /// that have not been solved yet
         /// </summary>

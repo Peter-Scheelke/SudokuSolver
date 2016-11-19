@@ -4,6 +4,7 @@ using SudokuSolver.Sudoku;
 using System.Collections.Generic;
 using System.IO;
 using SudokuSolver.SudokuStrategies;
+using SudokuSolver.SudokuSolver;
 
 namespace SudokuSolverTests
 {
@@ -774,45 +775,128 @@ namespace SudokuSolverTests
             Assert.IsTrue(puzzle.Rows[0][dimension * dimension - 1].Count == 1);
         }
 
+        /// <summary>
+        /// Make sure the <see cref="SharedSubgroupStrategy"/> works correctly
+        /// </summary>
+        [TestMethod]
+        public void TestSharedSubgroupStrategy()
+        {
+            SharedSubgroupStrategy strategy = new SharedSubgroupStrategy();
+
+            int dimension = 3;
+            List<int> cellValues = new List<int>();
+
+            for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            {
+                cellValues.Add(0);
+            }
+
+            SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
+
+            Assert.IsFalse(strategy.AdvancePuzzle(puzzle));
+
+            for (int i = 0; i < dimension * dimension - dimension; ++i)
+            {
+                puzzle.Columns[0][i].RemoveAllExcept(i + 1);
+            }
+
+            Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
+
+            List<Cell> block = puzzle.Blocks[dimension * dimension - dimension];
+            foreach (Cell cell in block)
+            {
+                if (!object.ReferenceEquals(cell.Column, puzzle.Columns[0]))
+                {
+                    for (int i = dimension * dimension - dimension + 1; i < dimension * dimension + 1; ++i)
+                    {
+                        Assert.IsFalse(cell.AllowedValues.ContainsKey(i));
+                    }
+                }
+                else
+                {
+                    for (int i = dimension * dimension - dimension + 1; i < dimension * dimension + 1; ++i)
+                    {
+                        Assert.IsTrue(cell.AllowedValues.ContainsKey(i));
+                    }
+                }
+            }
+
+            for (int i = 0; i < dimension * dimension - dimension; ++i)
+            {
+                puzzle.Rows[0][i].RemoveAllExcept(i + 1);
+            }
+
+            Assert.IsTrue(strategy.AdvancePuzzle(puzzle));
+            block = puzzle.Blocks[dimension - 1];
+
+            foreach (Cell cell in block)
+            {
+                if (!object.ReferenceEquals(cell.Row, puzzle.Rows[0]))
+                {
+                    for (int i = dimension * dimension - dimension + 1; i < dimension * dimension + 1; ++i)
+                    {
+                        Assert.IsFalse(cell.AllowedValues.ContainsKey(i));
+                    }
+                }
+                else
+                {
+                    for (int i = dimension * dimension - dimension + 1; i < dimension * dimension + 1; ++i)
+                    {
+                        Assert.IsTrue(cell.AllowedValues.ContainsKey(i));
+                    }
+                }
+            }
+        }
+
         [TestMethod]
         public void TestStuff()
         {
+            //string inputFilePath = "TestPuzzleInput.txt";
+            //string outputFilePath = "TestPuzzleOutputputputput.txt";
+            //SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
+
+            ////int dimension = 5;
+            ////List<int> cellValues = new List<int>();
+
+            ////for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
+            ////{
+            ////    cellValues.Add(0);
+            ////}
+
+            ////SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
+
+            ////for (int k = 0; k < dimension * dimension; ++k)
+            ////{
+            ////    for (int i = 0; i < dimension * dimension; ++i)
+            ////    {
+            ////        puzzle.Blocks[k][i].RemoveAllExcept(i + 1);
+            ////    }
+            ////}
+            //Assert.IsTrue(puzzle.IsValid());
+            //puzzle.Refresh();
+            //Assert.IsTrue(puzzle.IsValid());
+            //SharedSubgroupStrategy subgroup = new SharedSubgroupStrategy();
+            //BasicStrategy basic = new BasicStrategy();
+            //SingleCellStrategy single = new SingleCellStrategy();
+
+            //while (single.AdvancePuzzle(puzzle) || basic.AdvancePuzzle(puzzle) || subgroup.AdvancePuzzle(puzzle))
+            //{ Assert.IsTrue(puzzle.IsValid()); }
+
+
+            ////while (basic.AdvancePuzzle(puzzle)) { strategy.AdvancePuzzle(puzzle); }
+
+            //Assert.IsTrue(puzzle.IsValid());
+            //SudokuFiler.Write(outputFilePath, puzzle);
+
             string inputFilePath = "TestingInput.txt";
             string outputFilePath = "TestPuzzleOutputputputput.txt";
             SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
 
-            //int dimension = 5;
-            //List<int> cellValues = new List<int>();
+            SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
+            var blah = solver.Solve(puzzle);
 
-            //for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
-            //{
-            //    cellValues.Add(0);
-            //}
-
-            //SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
-
-            //for (int k = 0; k < dimension * dimension; ++k)
-            //{
-            //    for (int i = 0; i < dimension * dimension; ++i)
-            //    {
-            //        puzzle.Blocks[k][i].RemoveAllExcept(i + 1);
-            //    }
-            //}
-
-            puzzle.Refresh();
-
-            SharedSubgroupStrategy subgroup = new SharedSubgroupStrategy();
-            BasicStrategy basic = new BasicStrategy();
-            SingleCellStrategy single = new SingleCellStrategy();
-
-            while (single.AdvancePuzzle(puzzle) || basic.AdvancePuzzle(puzzle) || subgroup.AdvancePuzzle(puzzle))
-            { }
-
-            
-            //while (basic.AdvancePuzzle(puzzle)) { strategy.AdvancePuzzle(puzzle); }
-
-            Assert.IsTrue(puzzle.IsValid());
-            SudokuFiler.Write(outputFilePath, puzzle);
+            Assert.IsTrue(blah.Count == 1);
+            SudokuFiler.Write(outputFilePath, blah[0]);
         }
     }
 }
