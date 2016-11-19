@@ -6,7 +6,6 @@
 
 namespace SudokuSolver.SudokuStrategies
 {
-    using System;
     using System.Collections.Generic;
     using Sudoku;
 

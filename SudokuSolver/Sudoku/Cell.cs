@@ -153,10 +153,6 @@ namespace SudokuSolver.Sudoku
                 {
                     this.allowedValues.Add(value, value);
                 }
-                else
-                {
-                    throw new Exception($"Error: {value} is a duplicate");
-                }
             }
         }
 
@@ -180,10 +176,6 @@ namespace SudokuSolver.Sudoku
                 if (this.allowedValues.ContainsKey(value))
                 {
                     this.allowedValues.Remove(value);
-                }
-                else
-                {
-                    throw new Exception($"Error: {value} is not an allowed value");
                 }
             }
         }
@@ -210,6 +202,56 @@ namespace SudokuSolver.Sudoku
                     this.allowedValues.Add(value, value);
                 }
             }
+        }
+
+        /// <summary>
+        /// Looks at all of the determined values in the <see cref="Cell"/>'s
+        /// regions and eliminates them from the <see cref="Cell"/>
+        /// </summary>
+        /// <returns>Whether any values were eliminated</returns>
+        public bool EliminateValues()
+        {
+            if (this.Count == 1)
+            {
+                return false;
+            }
+
+            bool valuesWereEliminated = false;
+            List<int> valuesToEliminate = new List<int>();
+            foreach (Cell cell in this.Row)
+            {
+                if (cell.Count == 1)
+                {
+                    valuesToEliminate.Add(cell.AllowedValue);
+                }
+            }
+
+            foreach (Cell cell in this.Column)
+            {
+                if (cell.Count == 1)
+                {
+                    valuesToEliminate.Add(cell.AllowedValue);
+                }
+            }
+
+            foreach (Cell cell in this.Block)
+            {
+                if (cell.Count == 1)
+                {
+                    valuesToEliminate.Add(cell.AllowedValue);
+                }
+            }
+
+            foreach (int value in valuesToEliminate)
+            {
+                if (this.allowedValues.ContainsKey(value))
+                {
+                    this.RemoveAllowedValue(value);
+                    valuesWereEliminated = true;
+                }
+            }
+
+            return valuesWereEliminated;
         }
     }
 }

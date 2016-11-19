@@ -11,7 +11,7 @@ namespace SudokuSolver.SudokuStrategies
 
     /// <summary>
     /// The <see cref="OnlyChoiceStrategy"/> finds <see cref="Cells"/> in blocks, rows, and columns in which
-    /// the values of all other cells have been found. The final cell then gets
+    /// the values of all other cells have been found. The final cell then gets solved from that information.
     /// </summary>
     public class OnlyChoiceStrategy : SudokuStrategy
     {

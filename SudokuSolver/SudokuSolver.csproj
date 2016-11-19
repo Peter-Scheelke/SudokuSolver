@@ -43,16 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SudokuStrategies\BasicStrategy.cs" />
+    <Compile Include="SudokuStrategies\SharedSubgroupStrategy.cs" />
+    <Compile Include="SudokuStrategies\SingleCellStrategy.cs" />
+    <Compile Include="Sudoku\Cell.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SudokuStrategies\SinglePossibilityStrategy.cs" />
-    <Compile Include="SudokuStrategies\OnlyChoiceStrategy.cs" />
+    <Compile Include="Sudoku\SudokuFiler.cs" />
+    <Compile Include="Sudoku\SudokuPuzzle.cs" />
     <Compile Include="SudokuStrategies\SudokuStrategy.cs">
       <ExcludeFromStyleCop>False</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="Sudoku\Cell.cs" />
-    <Compile Include="Sudoku\SudokuFiler.cs" />
-    <Compile Include="Sudoku\SudokuPuzzle.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -23,15 +23,34 @@ namespace SudokuSolver.SudokuStrategies
         public bool AdvancePuzzle(SudokuPuzzle puzzle)
         {
             List<Cell> candidateCells = this.GetCandidateCells(puzzle);
-            return this.MessWithPuzzle(puzzle, candidateCells);
+            List<List<Cell>> candidateRegions = this.GetCandidateRegions(puzzle);
+            return this.MessWithPuzzle(puzzle, candidateCells, candidateRegions);
         }
 
         /// <summary>
         /// Finds the cells that should be messed with in order to advance the <see cref="SudokuPuzzle"/>
+        /// Returns null by default
         /// </summary>
         /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being advanced</param>
         /// <returns>The cells that should be messed with in order to advance the <see cref="SudokuPuzzle"/></returns>
-        protected abstract List<Cell> GetCandidateCells(SudokuPuzzle puzzle);
+        protected virtual List<Cell> GetCandidateCells(SudokuPuzzle puzzle)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Finds the regions that should be messed with to advance the <see cref="SudokuPuzzle"/>
+        /// Returns null by default
+        /// </summary>
+        /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being advanced</param>
+        /// <returns>
+        /// The regions of the <see cref="SudokuPuzzle"/> that should be messed with in order to 
+        /// advance the <see cref="SudokuPuzzle"/>
+        /// </returns>
+        protected virtual List<List<Cell>> GetCandidateRegions(SudokuPuzzle puzzle)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Messes with the given <see cref="SudokuPuzzle"/> to try to advance it toward a solution.
@@ -39,7 +58,8 @@ namespace SudokuSolver.SudokuStrategies
         /// </summary>
         /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being advanced</param>
         /// <param name="candidateCells">The <see cref="Cell"/>s in the puzzle that are relevant to advancing the puzzle</param>
+        /// <param name="candidateRegions">The regions in the puzzle that are relevant to advancing the puzzle</param>
         /// <returns>Whether the puzzle advances</returns>
-        protected abstract bool MessWithPuzzle(SudokuPuzzle puzzle, List<Cell> candidateCells);
+        protected abstract bool MessWithPuzzle(SudokuPuzzle puzzle, List<Cell> candidateCells, List<List<Cell>> candidateRegions);
     }
 }
