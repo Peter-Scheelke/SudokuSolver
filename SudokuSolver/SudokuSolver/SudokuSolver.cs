@@ -42,42 +42,48 @@ namespace SudokuSolver.SudokuSolver
         {
             List<SudokuPuzzle> solutions = new List<SudokuPuzzle>();
             Stack<SudokuPuzzle> puzzleStack = new Stack<SudokuPuzzle>();
-            puzzleStack.Push(puzzle);
+            puzzleStack.Push(puzzle.Clone());
 
             while (puzzleStack.Count > 0)
             {
-                SudokuPuzzle puzzleToSolve = puzzleStack.Pop();
-                if (puzzle.IsValid())
+                try
                 {
-                    bool puzzleAdvanced = false;
-                    do
+                    SudokuPuzzle puzzleToSolve = puzzleStack.Pop();
+                    if (puzzle.IsValid())
                     {
-                        puzzleAdvanced = false;
-                        for (int i = 0; i < this.strategies.Count; ++i)
+                        bool puzzleAdvanced = false;
+                        do
                         {
-                            while (this.strategies[i].AdvancePuzzle(puzzleToSolve))
+                            puzzleAdvanced = false;
+                            for (int i = 0; i < this.strategies.Count; ++i)
                             {
-                                puzzleAdvanced = true;
+                                while (this.strategies[i].AdvancePuzzle(puzzleToSolve))
+                                {
+                                    puzzleAdvanced = true;
+                                }
+                            }
+                        }
+                        while (puzzleAdvanced);
+
+                        if (puzzleToSolve.IsSolved() && puzzleToSolve.IsValid())
+                        {
+                            solutions.Add(puzzleToSolve);
+                            if (solutions.Count > 1)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            foreach (SudokuPuzzle guess in this.Guess(puzzleToSolve))
+                            {
+                                puzzleStack.Push(guess);
                             }
                         }
                     }
-                    while (puzzleAdvanced);
-
-                    if (puzzleToSolve.IsSolved())
-                    {
-                        solutions.Add(puzzleToSolve);
-                        if (solutions.Count > 1)
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        foreach (SudokuPuzzle guess in this.Guess(puzzleToSolve))
-                        {
-                            puzzleStack.Push(guess);
-                        }
-                    }
+                }
+                catch (Exception)
+                {
                 }
             }
 
@@ -92,6 +98,11 @@ namespace SudokuSolver.SudokuSolver
         /// <returns>The puzzle solutions found from guessing</returns>
         private List<SudokuPuzzle> Guess(SudokuPuzzle puzzle)
         {
+            if (!puzzle.IsValid())
+            {
+                return new List<SudokuPuzzle>();
+            }
+
             Cell cellToGuessOn = null;
             int x = -1;
             int y = -1;

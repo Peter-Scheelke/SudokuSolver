@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using SudokuSolver.SudokuStrategies;
 using SudokuSolver.SudokuSolver;
+using SudokuSolver;
 
 namespace SudokuSolverTests
 {
@@ -893,36 +894,62 @@ namespace SudokuSolverTests
             }
         }
 
+        /// <summary>
+        /// Make sure the main program runs without breaking and also that it creates files
+        /// </summary>
+        [TestMethod]
+        public void TestProgram()
+        {
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
+            foreach (string inputPath in files)
+            {
+                string outputPath = $@"OutputFiles\{Path.GetFileName(inputPath)}";
+                string[] args = { inputPath, outputPath };
+                Program.Main(args);
+            }
+        }
+
         [TestMethod]
         public void TestStuff()
         {
-            //string input = @"\Input\Puzzle-16x16-0201.txt";
-            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
+            string input = @".\Input\Puzzle-25x25-0902.txt";
+            SudokuFiler filer = new SudokuFiler(input);
+            SudokuPuzzle puzzle = filer.CreatePuzzle();
+            Assert.IsTrue(puzzle.IsValid());
 
-            List<SudokuPuzzle> puzzlesToSolve = new List<SudokuPuzzle>();
-            foreach (string file in files)
-            {
-                try
-                {
-                    SudokuFiler filer = new SudokuFiler(file);
-                    puzzlesToSolve.Add(filer.CreatePuzzle());
-                }
-                catch (Exception e) { }
-            }
 
-            int fileCount = 0;
-            SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
-            foreach (SudokuPuzzle puzzle in puzzlesToSolve)
-            {
-                try
-                {
-                    var solutions = solver.Solve(puzzle);
-                    ++fileCount;
-                }
-                catch (Exception e)
-                {
-                }
-            }
+            //string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
+            //foreach (string inputPath in files)
+            //{
+            //    string outputPath = $@"OutputFiles\{Path.GetFileName(inputPath)}";
+            //    string[] args = { inputPath, outputPath };
+            //    Program.Main(args);
+            //}
+
+
+            //List<SudokuPuzzle> puzzlesToSolve = new List<SudokuPuzzle>();
+            //foreach (string file in files)
+            //{
+            //    try
+            //    {
+            //        SudokuFiler filer = new SudokuFiler(file);
+            //        puzzlesToSolve.Add(filer.CreatePuzzle());
+            //    }
+            //    catch (Exception e) { }
+            //}
+
+            //int fileCount = 0;
+            //SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
+            //foreach (SudokuPuzzle puzzle in puzzlesToSolve)
+            //{
+            //    ++fileCount;
+            //    string file = files[fileCount].Substring(120) ;
+            //    var solutions = solver.Solve(puzzle);
+            //    foreach (SudokuPuzzle solution in solutions)
+            //    {
+            //        Assert.IsTrue(solution.IsValid());
+            //    }
+            //}
         }
     }
 }
