@@ -900,56 +900,95 @@ namespace SudokuSolverTests
         [TestMethod]
         public void TestProgram()
         {
+            System.IO.DirectoryInfo directory;
+            string outputDirectory = "ProgramTestOutput";
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+            else
+            {
+                directory = new DirectoryInfo(outputDirectory);
+                foreach (FileInfo file in directory.GetFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo subdirectory in directory.GetDirectories())
+                {
+                    subdirectory.Delete(true);
+                }
+            }
+
+            Directory.CreateDirectory(outputDirectory);
+
             string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
             foreach (string inputPath in files)
             {
-                string outputPath = $@"OutputFiles\{Path.GetFileName(inputPath)}";
+                string outputPath = $@"{outputDirectory}\{Path.GetFileName(inputPath)}";
                 string[] args = { inputPath, outputPath };
                 Program.Main(args);
             }
+
+            Assert.IsTrue(Directory.Exists(outputDirectory));
+            directory = new DirectoryInfo(outputDirectory);
+            Assert.IsTrue(directory.GetFiles().Length == files.Length);
         }
 
+        /// <summary>
+        /// Make sure the program doesn't crash with bad input
+        /// </summary>
         [TestMethod]
-        public void TestStuff()
+        public void TestProgramWithBadInput()
         {
-            string input = @".\Input\Puzzle-25x25-0902.txt";
-            SudokuFiler filer = new SudokuFiler(input);
+            string badInput = "<>You can't have these symbols!?<>.txt";
+            string badOutput = "<>This one is just as bad!<>";
+
+            string[] badInputArray1 = { badInput, badOutput };
+            Program.Main(badInputArray1);
+
+            string[] badInputArray2 = { badInput };
+            Program.Main(badInputArray2);
+
+            string[] badInputArray3 = { @"Input\Puzzle-4x4-0001.txt", badOutput };
+            Program.Main(badInputArray3);
+
+            string[] badInputArray4 = { badInput, @"TestOutput.txt" };
+            Program.Main(badInputArray4);
+
+            Assert.IsFalse(File.Exists("TestOutput.txt"));
+        }
+
+        /// <summary>
+        /// Make sure the <see cref="SudokuSolver.SudokuSolver.SudokuSolver"/>
+        /// gets the correct result when solving puzzles
+        /// </summary>
+        [TestMethod]
+        public void TestSolvingSpecificPuzzles()
+        {
+            string badPuzzlePath = @"Input\Puzzle-25x25-0902.txt";
+            string multipleSolutionsPuzzlePath = @"Input\Puzzle-16x16-0902.txt";
+            string goodPuzzlePath = @"Input\Puzzle-16x16-0301.txt";
+
+            SudokuFiler filer = null;
+            try
+            {
+                filer = new SudokuFiler(badPuzzlePath);
+            }
+            catch(Exception)
+            {
+            }
+
+            Assert.IsTrue(filer == null);
+
+            filer = new SudokuFiler(multipleSolutionsPuzzlePath);
             SudokuPuzzle puzzle = filer.CreatePuzzle();
-            Assert.IsTrue(puzzle.IsValid());
+            SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
+            Assert.IsTrue(solver.Solve(puzzle).Count == 2);
 
-
-            //string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
-            //foreach (string inputPath in files)
-            //{
-            //    string outputPath = $@"OutputFiles\{Path.GetFileName(inputPath)}";
-            //    string[] args = { inputPath, outputPath };
-            //    Program.Main(args);
-            //}
-
-
-            //List<SudokuPuzzle> puzzlesToSolve = new List<SudokuPuzzle>();
-            //foreach (string file in files)
-            //{
-            //    try
-            //    {
-            //        SudokuFiler filer = new SudokuFiler(file);
-            //        puzzlesToSolve.Add(filer.CreatePuzzle());
-            //    }
-            //    catch (Exception e) { }
-            //}
-
-            //int fileCount = 0;
-            //SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
-            //foreach (SudokuPuzzle puzzle in puzzlesToSolve)
-            //{
-            //    ++fileCount;
-            //    string file = files[fileCount].Substring(120) ;
-            //    var solutions = solver.Solve(puzzle);
-            //    foreach (SudokuPuzzle solution in solutions)
-            //    {
-            //        Assert.IsTrue(solution.IsValid());
-            //    }
-            //}
+            filer = new SudokuFiler(goodPuzzlePath);
+            puzzle = filer.CreatePuzzle();
+            solver = new SudokuSolver.SudokuSolver.SudokuSolver();
+            Assert.IsTrue(solver.Solve(puzzle).Count == 1);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace SudokuSolver
         }
 
         /// <summary>
-        /// Output the solutions to the given <see cref="SudokuPuzzle"/> to the given filepath
+        /// Output the solutions to the given <see cref="SudokuPuzzle"/> to the given file path
         /// </summary>
         /// <param name="filepath">The file to which the solutions will be written</param>
         /// <param name="filer">Used to convert <see cref="SudokuPuzzle"/>s into lists of strings</param>
