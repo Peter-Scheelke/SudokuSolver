@@ -6,9 +6,10 @@
 
 namespace SudokuSolver.SudokuSolver
 {
+    using System;
     using System.Collections.Generic;
     using Sudoku;
-    using SudokuStrategies;    
+    using SudokuStrategies;
 
     /// <summary>
     /// Solves <see cref="SudokuPuzzle"/>s using the various <see cref="SudokuStrategy"/>s
@@ -39,45 +40,44 @@ namespace SudokuSolver.SudokuSolver
         /// <returns>A list of <see cref="SudokuPuzzle"/>s that are solutions to the given <see cref="SudokuPuzzle"/></returns>
         public List<SudokuPuzzle> Solve(SudokuPuzzle puzzle)
         {
-            SudokuPuzzle puzzleToSolve = puzzle.Clone();
             List<SudokuPuzzle> solutions = new List<SudokuPuzzle>();
-            List<int> strategyUseCounts = new List<int>();
-            foreach (var strategy in this.strategies)
-            {
-                strategyUseCounts.Add(0);
-            }
+            Stack<SudokuPuzzle> puzzleStack = new Stack<SudokuPuzzle>();
+            puzzleStack.Push(puzzle);
 
-            bool puzzleAdvanced = false;
-
-            // I have finally used a do while loop. At long last!
-            do
+            while (puzzleStack.Count > 0)
             {
-                puzzleAdvanced = false;
-                for (int i = 0; i < this.strategies.Count; ++i)
+                SudokuPuzzle puzzleToSolve = puzzleStack.Pop();
+                if (puzzle.IsValid())
                 {
-                    while (this.strategies[i].AdvancePuzzle(puzzleToSolve))
+                    bool puzzleAdvanced = false;
+                    do
                     {
-                        ++strategyUseCounts[i];
-                        puzzleAdvanced = true;
+                        puzzleAdvanced = false;
+                        for (int i = 0; i < this.strategies.Count; ++i)
+                        {
+                            while (this.strategies[i].AdvancePuzzle(puzzleToSolve))
+                            {
+                                puzzleAdvanced = true;
+                            }
+                        }
                     }
-                }
-            }
-            while (puzzleAdvanced);
+                    while (puzzleAdvanced);
 
-            bool isSolved = puzzleToSolve.IsSolved();
-            bool isValid = puzzleToSolve.IsValid();
-            if (isValid)
-            {
-                if (!puzzle.IsSolved())
-                {
-                    foreach (SudokuPuzzle solution in this.Guess(puzzleToSolve))
+                    if (puzzleToSolve.IsSolved())
                     {
-                        solutions.Add(solution);
+                        solutions.Add(puzzleToSolve);
+                        if (solutions.Count > 1)
+                        {
+                            break;
+                        }
                     }
-                }
-                else
-                {
-                    solutions.Add(puzzleToSolve);
+                    else
+                    {
+                        foreach (SudokuPuzzle guess in this.Guess(puzzleToSolve))
+                        {
+                            puzzleStack.Push(guess);
+                        }
+                    }
                 }
             }
 
@@ -92,40 +92,46 @@ namespace SudokuSolver.SudokuSolver
         /// <returns>The puzzle solutions found from guessing</returns>
         private List<SudokuPuzzle> Guess(SudokuPuzzle puzzle)
         {
-            Cell cellToGuessOn = puzzle.Rows[0][0];
-            int x = 0;
-            int y = 0;
+            Cell cellToGuessOn = null;
+            int x = -1;
+            int y = -1;
+
             for (int i = 0; i < puzzle.Rows.Count; ++i)
             {
                 for (int k = 0; k < puzzle.Rows[i].Count; ++k)
                 {
-                    if (puzzle.Rows[i][k].Count < cellToGuessOn.Count)
+                    Cell cell = puzzle.Rows[i][k];
+                    if (cell.Count > 1)
                     {
-                        cellToGuessOn = puzzle.Rows[i][k];
-                        x = i;
-                        y = k;
+                        if (cellToGuessOn == null)
+                        {
+                            cellToGuessOn = cell;
+                            x = i;
+                            y = k;
+                        }
+                        else if (cellToGuessOn.Count > cell.Count)
+                        {
+                            cellToGuessOn = cell;
+                            x = i;
+                            y = k;
+                        }
                     }
                 }
             }
 
-            List<SudokuPuzzle> solutions = new List<SudokuPuzzle>();
-            foreach (int allowedValue in cellToGuessOn.AllowedValues.Keys)
-            {
-                SudokuPuzzle newPuzzle = puzzle.Clone();
-                newPuzzle.Rows[x][y].RemoveAllExcept(allowedValue);
-                List<SudokuPuzzle> guessedSolutions = this.Solve(newPuzzle);
-                foreach (var guessedSolution in guessedSolutions)
-                {
-                    solutions.Add(guessedSolution);
-                }
+            List<SudokuPuzzle> guesses = new List<SudokuPuzzle>();
 
-                if (solutions.Count > 1)
+            if (cellToGuessOn != null)
+            {
+                foreach (int allowedValue in cellToGuessOn.AllowedValues.Keys)
                 {
-                    break;
+                    SudokuPuzzle guess = puzzle.Clone();
+                    guess.Rows[x][y].RemoveAllExcept(allowedValue);
+                    guesses.Add(guess);
                 }
             }
 
-            return solutions;
+            return guesses;
         }
     }
 }

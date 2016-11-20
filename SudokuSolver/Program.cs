@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//-----------------------------------------------------------------------
+// <copyright file="Program.cs" company="Peter Scheelke">
+//      Copyright (c) Peter Scheelke. All rights reserved.
+// </copyright>
+//-----------------------------------------------------------------------
 
 namespace SudokuSolver
 {
-    class Program
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using Sudoku;
+
+    /// <summary>
+    /// The main entry point of the program
+    /// </summary>
+    public class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// The main entry point of the program
+        /// </summary>
+        /// <param name="args">An array of command line arguments</param>
+        public static void Main(string[] args)
         {
         }
     }

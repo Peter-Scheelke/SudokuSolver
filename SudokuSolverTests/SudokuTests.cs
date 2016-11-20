@@ -532,44 +532,59 @@ namespace SudokuSolverTests
         public void TestSudokuFiler()
         {
             string inputFilePath = "TestPuzzleInput.txt";
-            string outputFilePath = "TestPuzzleOutput.txt";
-            SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
+            SudokuFiler filer = new SudokuFiler(inputFilePath);
+            SudokuPuzzle puzzle = filer.CreatePuzzle();
 
-            SudokuFiler.Write(outputFilePath, puzzle);
+            List<string> stringEquivalent = filer.ConvertToStrings();
+            string[] fileData = File.ReadAllLines(inputFilePath);
 
-            string[] inputFile = File.ReadAllLines(inputFilePath);
-            string[] outputFile = File.ReadAllLines(outputFilePath);
-
-            Assert.IsTrue(inputFile.Length == outputFile.Length);
-
-            for (int i = 1; i < outputFile.Length; ++i)
+            Assert.IsTrue(stringEquivalent.Count == fileData.Length);
+            for (int i = 0; i < fileData.Length; ++i)
             {
-                Assert.IsTrue(outputFile[i].Length == puzzle.Dimension * puzzle.Dimension * 2 - 1);
+                Assert.IsTrue(stringEquivalent[i] == fileData[i]);
             }
 
-            for (int i = 0; i < inputFile.Length; ++i)
+            stringEquivalent = filer.ConvertToStrings(puzzle);
+            Assert.IsTrue(stringEquivalent.Count == fileData.Length);
+            for (int i = 0; i < fileData.Length; ++i)
             {
-                Assert.IsTrue(inputFile[i] == outputFile[i]);
+                Assert.IsTrue(stringEquivalent[i] == fileData[i]);
             }
+
+            bool exceptionWasThrown = false;
 
             // Try a bad file path
             try
             {
-                SudokuFiler.Read("notafilepath.txt");
+                SudokuFiler badFiler = new SudokuFiler("notafilepath.txt");
             }
             catch (Exception)
             {
-                return;
+                exceptionWasThrown = true;
             }
 
-            Assert.Fail();
+            Assert.IsTrue(exceptionWasThrown);
+            exceptionWasThrown = false;
+
+            File.Create("thisisanemptyfile.txt");
+            try
+            {
+                SudokuFiler badFiler = new SudokuFiler("thisisanemptyfile.txt");
+            }
+            catch (Exception)
+            {
+                exceptionWasThrown = true;
+            }
+
+            Assert.IsTrue(exceptionWasThrown);
         }
 
         [TestMethod]
         public void TestClone()
         {
             string inputFilePath = "TestPuzzleInput.txt";
-            SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
+            SudokuFiler filer = new SudokuFiler(inputFilePath);
+            SudokuPuzzle puzzle = filer.CreatePuzzle();
 
             for (int i = 0; i < puzzle.Dimension * puzzle.Dimension; ++i)
             {
@@ -722,6 +737,8 @@ namespace SudokuSolverTests
         {
             BasicStrategy strategy = new BasicStrategy();
 
+            Assert.IsTrue(strategy.ToString() == "Basic Strategy");
+
             int dimension = 3;
             List<int> cellValues = new List<int>();
 
@@ -751,6 +768,8 @@ namespace SudokuSolverTests
         public void TestSingleCellStrategy()
         {
             SingleCellStrategy strategy = new SingleCellStrategy();
+
+            Assert.IsTrue(strategy.ToString() == "Single Cell Strategy");
 
             int dimension = 3;
             List<int> cellValues = new List<int>();
@@ -782,6 +801,8 @@ namespace SudokuSolverTests
         public void TestSharedSubgroupStrategy()
         {
             SharedSubgroupStrategy strategy = new SharedSubgroupStrategy();
+
+            Assert.IsTrue(strategy.ToString() == "Shared Subgroup Strategy");
 
             int dimension = 3;
             List<int> cellValues = new List<int>();
@@ -848,55 +869,60 @@ namespace SudokuSolverTests
             }
         }
 
+        /// <summary>
+        /// Make sure the <see cref="SudokuSolver.SudokuSolver.SudokuSolver"/> is working
+        /// </summary>
+        [TestMethod]
+        public void TestSudokuSolver()
+        {
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
+
+            foreach (string file in files)
+            {
+                try
+                {
+                    SudokuFiler filer = new SudokuFiler(file);
+                    SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
+                    List<SudokuPuzzle> puzzles = solver.Solve(filer.CreatePuzzle());
+                    Assert.IsTrue(puzzles.Count == 1);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+        }
+
         [TestMethod]
         public void TestStuff()
         {
-            //string inputFilePath = "TestPuzzleInput.txt";
-            //string outputFilePath = "TestPuzzleOutputputputput.txt";
-            //SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
+            //string input = @"\Input\Puzzle-16x16-0201.txt";
+            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory() + @"\Input");
 
-            ////int dimension = 5;
-            ////List<int> cellValues = new List<int>();
+            List<SudokuPuzzle> puzzlesToSolve = new List<SudokuPuzzle>();
+            foreach (string file in files)
+            {
+                try
+                {
+                    SudokuFiler filer = new SudokuFiler(file);
+                    puzzlesToSolve.Add(filer.CreatePuzzle());
+                }
+                catch (Exception e) { }
+            }
 
-            ////for (int i = 0; i < dimension * dimension * dimension * dimension; ++i)
-            ////{
-            ////    cellValues.Add(0);
-            ////}
-
-            ////SudokuPuzzle puzzle = new SudokuPuzzle(dimension, cellValues);
-
-            ////for (int k = 0; k < dimension * dimension; ++k)
-            ////{
-            ////    for (int i = 0; i < dimension * dimension; ++i)
-            ////    {
-            ////        puzzle.Blocks[k][i].RemoveAllExcept(i + 1);
-            ////    }
-            ////}
-            //Assert.IsTrue(puzzle.IsValid());
-            //puzzle.Refresh();
-            //Assert.IsTrue(puzzle.IsValid());
-            //SharedSubgroupStrategy subgroup = new SharedSubgroupStrategy();
-            //BasicStrategy basic = new BasicStrategy();
-            //SingleCellStrategy single = new SingleCellStrategy();
-
-            //while (single.AdvancePuzzle(puzzle) || basic.AdvancePuzzle(puzzle) || subgroup.AdvancePuzzle(puzzle))
-            //{ Assert.IsTrue(puzzle.IsValid()); }
-
-
-            ////while (basic.AdvancePuzzle(puzzle)) { strategy.AdvancePuzzle(puzzle); }
-
-            //Assert.IsTrue(puzzle.IsValid());
-            //SudokuFiler.Write(outputFilePath, puzzle);
-
-            string inputFilePath = "TestingInput.txt";
-            string outputFilePath = "TestPuzzleOutputputputput.txt";
-            SudokuPuzzle puzzle = SudokuFiler.Read(inputFilePath);
-
+            int fileCount = 0;
             SudokuSolver.SudokuSolver.SudokuSolver solver = new SudokuSolver.SudokuSolver.SudokuSolver();
-            var blah = solver.Solve(puzzle);
-
-            Assert.IsTrue(blah.Count == 1);
-            SudokuFiler.Write(outputFilePath, blah[0]);
+            foreach (SudokuPuzzle puzzle in puzzlesToSolve)
+            {
+                try
+                {
+                    var solutions = solver.Solve(puzzle);
+                    ++fileCount;
+                }
+                catch (Exception e)
+                {
+                }
+            }
         }
     }
 }

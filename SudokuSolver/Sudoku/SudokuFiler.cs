@@ -15,139 +15,183 @@ namespace SudokuSolver.Sudoku
     /// Reads in <see cref="SudokuPuzzle"/>s from a file or writes them
     /// out to a file
     /// </summary>
-    public static class SudokuFiler
+    public class SudokuFiler
     {
         /// <summary>
-        /// Reads in the <see cref="SudokuPuzzle"/> contained in the given file
-        /// and returns it
+        /// The file path to the file containing the <see cref="SudokuPuzzle"/>
         /// </summary>
-        /// <param name="filePath">The path to the file containing the <see cref="SudokuPuzzle"/></param>
-        /// <returns>The <see cref="SudokuPuzzle"/> created from the contents of the given file</returns>
-        public static SudokuPuzzle Read(string filePath)
+        private string filepath;
+
+        /// <summary>
+        /// A dictionary used to convert character symbols into integers
+        /// </summary>
+        private Dictionary<char, int> symbolToIntMap;
+
+        /// <summary>
+        /// A dictionary used to convert integers into character symbols
+        /// </summary>
+        private Dictionary<int, char> intToSymbolMap;
+
+        /// <summary>
+        /// The dimension of the <see cref="SudokuPuzzle"/>
+        /// </summary>
+        private int dimension;
+
+        /// <summary>
+        /// A list of the values in the file (converted to integers)
+        /// </summary>
+        private List<int> cellValues;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SudokuFiler"/> class
+        /// </summary>
+        /// <param name="filepath">A file containing a <see cref="SudokuPuzzle"/></param>
+        public SudokuFiler(string filepath)
         {
-            if (!File.Exists(filePath))
+            this.filepath = filepath;
+            this.intToSymbolMap = new Dictionary<int, char>();
+            this.symbolToIntMap = new Dictionary<char, int>();
+            this.cellValues = new List<int>();
+
+            this.intToSymbolMap.Add(0, '-');
+            this.symbolToIntMap.Add('-', 0);
+
+            if (!File.Exists(filepath))
             {
-                throw new Exception($"Error: Coud not find file {filePath}");
+                throw new Exception($"Error: Could not find file {filepath}");
             }
             else
             {
-                string[] lines = File.ReadAllLines(filePath);
-                int dimension = Convert.ToInt32(Math.Sqrt(Convert.ToInt32(lines[0])));
-
-                List<int> cellValues = new List<int>();
-
-                // Ignore the first two lines (one is the dimension and the other
-                // is just a list of the column numbers)
-                for (int i = 2; i < lines.Length; ++i)
+                try
                 {
-                    string[] symbols = lines[i].Split(' ');
-                    foreach (string symbol in symbols)
+                    string[] lines = File.ReadAllLines(filepath);
+                    this.dimension = Convert.ToInt32(Math.Sqrt(Convert.ToInt32(lines[0])));
+                    string[] symbols = lines[1].Split(' ');
+
+                    for (int i = 0; i < symbols.Length; ++i)
                     {
-                        cellValues.Add(GetIntValue(symbol[0]));
+                        this.symbolToIntMap.Add(Convert.ToChar(symbols[i]), i + 1);
+                        this.intToSymbolMap.Add(i + 1, Convert.ToChar(symbols[i]));
                     }
-                }
 
-                return new SudokuPuzzle(dimension, cellValues);
-            }
-        }
-
-        /// <summary>
-        /// Writes the given <see cref="SudokuPuzzle"/> to a file
-        /// </summary>
-        /// <param name="filePath">The file to which the <see cref="SudokuPuzzle"/> should be written</param>
-        /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being written to the file</param>
-        public static void Write(string filePath, SudokuPuzzle puzzle)
-        {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
-
-            List<string> linesToWrite = new List<string>();
-            linesToWrite.Add((puzzle.Dimension * puzzle.Dimension).ToString());
-
-            StringBuilder columnLabels = new StringBuilder();
-            for (int i = 1; i <= puzzle.Dimension * puzzle.Dimension; ++i)
-            {
-                if (columnLabels.Length > 0)
-                {
-                    columnLabels.Append(' ');
-                }
-
-                columnLabels.Append(GetCharValue(i));
-            }
-
-            linesToWrite.Add(columnLabels.ToString());
-
-            foreach (var row in puzzle.Rows)
-            {
-                StringBuilder builder = new StringBuilder();
-                foreach (Cell cell in row)
-                {
-                    int symbol = 0;
-                    if (cell.AllowedValues.Count == 1)
+                    for (int i = 2; i < lines.Length; ++i)
                     {
-                        foreach (int value in cell.AllowedValues.Values)
+                        symbols = lines[i].Split(' ');
+                        foreach (string symbol in symbols)
                         {
-                            symbol = value;
+                            if (symbol.Length > 0)
+                            {
+                                this.cellValues.Add(this.symbolToIntMap[Convert.ToChar(symbol[0])]);
+                            }
                         }
                     }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"Error: Could not convert file {filepath} into a sudoku puzzle.\n{e.ToString()}");
+                }
+            }
+        }
 
-                    char symbolForFile = GetCharValue(symbol);
-                    if (builder.Length > 0)
-                    {
-                        builder.Append(' ');
-                    }
+        /// <summary>
+        /// Creates a new <see cref="SudokuPuzzle"/> from the file given when the
+        /// <see cref="SudokuFiler"/> was created
+        /// </summary>
+        /// <returns>A new <see cref="SudokuPuzzle"/> created from the <see cref="SudokuFiler"/> file</returns>
+        public SudokuPuzzle CreatePuzzle()
+        {
+            return new SudokuPuzzle(this.dimension, this.cellValues);
+        }
 
-                    builder.Append(symbolForFile);
+        /// <summary>
+        /// Converts the <see cref="SudokuPuzzle"/> into a list of strings
+        /// </summary>
+        /// <returns>A list of strings containing the data the <see cref="SudokuFiler"/> read from the file</returns>
+        public List<string> ConvertToStrings()
+        {
+            List<string> stringEquivalent = new List<string>();
+
+            stringEquivalent.Add((this.dimension * this.dimension).ToString());
+            StringBuilder symbolLineBuilder = new StringBuilder();
+            for (int i = 1; i < this.intToSymbolMap.Count; ++i)
+            {
+                if (symbolLineBuilder.Length > 0)
+                {
+                    symbolLineBuilder.Append(' ');
                 }
 
-                linesToWrite.Add(builder.ToString());
+                symbolLineBuilder.Append(this.intToSymbolMap[i]);
             }
 
-            File.WriteAllLines(filePath, linesToWrite.ToArray());
+            stringEquivalent.Add(symbolLineBuilder.ToString());
+
+            symbolLineBuilder.Clear();
+            foreach (int cellValue in this.cellValues)
+            {
+                if (symbolLineBuilder.Length > 0)
+                {
+                    symbolLineBuilder.Append(' ');
+                }
+
+                symbolLineBuilder.Append(this.intToSymbolMap[cellValue]);
+
+                if ((symbolLineBuilder.Length + 1) / 2 == this.dimension * this.dimension)
+                {
+                    stringEquivalent.Add(symbolLineBuilder.ToString());
+                    symbolLineBuilder.Clear();
+                }
+            }
+
+            return stringEquivalent;
         }
 
         /// <summary>
-        /// Converts a sudoku symbol into an integer
+        /// Converts the given <see cref="SudokuPuzzle"/> into a list of strings
         /// </summary>
-        /// <param name="symbol">The symbol being converted to an integer</param>
-        /// <returns>The integer version of the given symbol</returns>
-        private static int GetIntValue(char symbol)
+        /// <param name="puzzle">The <see cref="SudokuPuzzle"/> being converted into a list of strings</param>
+        /// <returns>A list of strings containing the <see cref="SudokuPuzzle"/></returns>
+        public List<string> ConvertToStrings(SudokuPuzzle puzzle)
         {
-            if (symbol == '-')
-            {
-                return 0;
-            }
-            else if (char.IsDigit(symbol))
-            {
-                return Convert.ToInt32(char.GetNumericValue(symbol));
-            }
-            else
-            {
-                return Convert.ToInt32(symbol - 'A' + 10);
-            }
-        }
+            List<string> stringEquivalent = new List<string>();
 
-        /// <summary>
-        /// Converts an integer into a sudoku symbol
-        /// </summary>
-        /// <param name="symbol">The integer being converted to a symbol</param>
-        /// <returns>The character symbol of the given integer</returns>
-        private static char GetCharValue(int symbol)
-        {
-            if (symbol == 0)
+            stringEquivalent.Add((puzzle.Dimension * puzzle.Dimension).ToString());
+            StringBuilder symbolLineBuilder = new StringBuilder();
+            for (int i = puzzle.CellMin; i <= puzzle.CellMax; ++i)
             {
-                return '-';
+                if (symbolLineBuilder.Length > 0)
+                {
+                    symbolLineBuilder.Append(' ');
+                }
+
+                symbolLineBuilder.Append(this.intToSymbolMap[i]);
             }
-            else if (symbol <= 9 && symbol >= 1)
+
+            stringEquivalent.Add(symbolLineBuilder.ToString());
+
+            symbolLineBuilder.Clear();
+            foreach (var row in puzzle.Rows)
             {
-                return Convert.ToChar(symbol.ToString()[0]);
+                foreach (Cell cell in row)
+                {
+                    if (symbolLineBuilder.Length > 0)
+                    {
+                        symbolLineBuilder.Append(' ');
+                    }
+
+                    int cellValue = 0;
+                    if (cell.Count == 1)
+                    {
+                        cellValue = cell.AllowedValue;
+                    }
+
+                    symbolLineBuilder.Append(this.intToSymbolMap[cellValue]);
+                }
+
+                stringEquivalent.Add(symbolLineBuilder.ToString());
+                symbolLineBuilder.Clear();
             }
-            else
-            {
-                return Convert.ToChar('A' + symbol - 10);
-            }
+
+            return stringEquivalent;
         }
     }
 }
