@@ -1,0 +1,14 @@
+4
+A B C D
+B - C A
+A C - D
+C A D -
+- B A C
+
+Solved
+4
+A B C D
+B D C A
+A C B D
+C A D B
+D B A C
